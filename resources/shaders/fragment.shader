@@ -6,8 +6,9 @@ in vec3 Normal;
 out vec4 FragColor;
 
 struct Material {
-    sampler2D diffuseMap;
-    sampler2D specularMap;
+    sampler2D diffuse_map;
+    sampler2D specular_map;
+    sampler2D normal_map;
     float shininess;
 };
 
@@ -58,17 +59,17 @@ void main() {
     float epsilon   = light.cutoff_cosine - light.outer_cutoff_cosine;
     float intensity = clamp((theta - light.outer_cutoff_cosine) / epsilon, 0.0, 1.0);
 
-    vec3 ambient = light.ambient * texture(material.diffuseMap, TexCoords).rgb;
+    vec3 ambient = light.ambient * texture(material.diffuse_map, TexCoords).rgb;
 
     vec3 norm = normalize(Normal);
     float diff = max(dot(norm, lightDirection), 0.0);
-    vec3 diffuse = light.diffuse * diff * texture(material.diffuseMap, TexCoords).rgb;
+    vec3 diffuse = light.diffuse * diff * texture(material.diffuse_map, TexCoords).rgb;
 
     // Calculate the specular lighting component
     vec3 viewerDirection = normalize(viewerPosition - FragPos);
     vec3 reflectionDirection = reflect(-lightDirection, norm);
     float spec = pow(max(dot(viewerDirection, reflectionDirection), 0.0), material.shininess);
-    vec3 specular = light.specular * spec * texture(material.specularMap, TexCoords).rgb;
+    vec3 specular = light.specular * spec * texture(material.specular_map, TexCoords).rgb;
 
     // Attenuation
     float distance    = length(light.position - FragPos);

@@ -1,4 +1,4 @@
-#include <Shader.h>
+#include <shader.h>
 
 
 Shader::Shader(const std::string& shaderSourcePath, GLenum shaderType) : id{} {
