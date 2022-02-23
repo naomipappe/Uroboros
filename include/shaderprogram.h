@@ -23,18 +23,19 @@ namespace Ouroboros {
         ~ShaderProgram();
         void use() const;
 
-        void setUniform(const std::string& uniformName, const int& value);
-        void setUniform(const std::string& uniformName, const bool& value);
-        void setUniform(const std::string& uniformName, const float& value);
+        void setUniform(const std::string& uniformName, int value);
+        void setUniform(const std::string& uniformName, bool value);
+        void setUniform(const std::string& uniformName, float value);
         void setUniform(const std::string& uniformName, const glm::vec3& value);
         void setUniform(const std::string& uniformName, const glm::mat3& value);
         void setUniform(const std::string& uniformName, const glm::mat4& value);
 
     private:
-        unsigned int id;
-        static const size_t infoLogSize = 512;
-        static const std::string diffuseUniformName;
-        static const std::string specularUniformName;
+        uint32_t id;
+        static constexpr uint16_t infoLogSize = 512;
+        static const std::string diffuseSamplerName;
+        static const std::string specularSamplerName;
+        static const std::string normalSamplerName;
 
     private:
         void createShaderProgram(uint32_t vertexShaderId, uint32_t fragmentShaderId);

@@ -1,7 +1,9 @@
 #include <shaderprogram.h>
 namespace Ouroboros {
-    const std::string ShaderProgram::diffuseUniformName = "material.diffuse_map";
-    const std::string ShaderProgram::specularUniformName = "material.specular_map";
+
+    const std::string ShaderProgram::diffuseSamplerName = "material.diffuse_map";
+    const std::string ShaderProgram::specularSamplerName = "material.specular_map";
+    const std::string ShaderProgram::normalSamplerName = "material.normal_map";
 
     ShaderProgram::ShaderProgram(Shader&& vertexShader, Shader&& fragmentShader) noexcept : id{} {
         createShaderProgram(vertexShader.getID(), fragmentShader.getID());
@@ -24,6 +26,12 @@ namespace Ouroboros {
             glGetProgramInfoLog(id, ShaderProgram::infoLogSize, nullptr, infoLog);
             throw std::runtime_error(std::string("ERROR::SHADER::PROGRAM::LINK_FAILED\n").append(infoLog));
         }
+
+        // After creating the shader program, we set samplers to appropriate units
+        // This is assuming that each mesh has exactly one diffuse, specular and normal map
+        setUniform(diffuseSamplerName, Diffuse::cTextureUnitDiffuse);
+        setUniform(specularSamplerName, Specular::cTextureUnitSpecular);
+        setUniform(normalSamplerName, Normal::cTextureUnitNormal);
     }
 
     ShaderProgram::~ShaderProgram() {
@@ -34,25 +42,23 @@ namespace Ouroboros {
         glUseProgram(id);
     }
 
-    void ShaderProgram::setUniform(const std::string& uniformName, const int& value) {
+    void ShaderProgram::setUniform(const std::string& uniformName, int value) {
         glUniform1i(glGetUniformLocation(id, uniformName.c_str()), value);
     }
-
-    void ShaderProgram::setUniform(const std::string& uniformName, const bool& value) {
-    glUniform1i(glGetUniformLocation(id, uniformName.c_str()), value);
-}
-
-void ShaderProgram::setUniform(const std::string& uniformName, const float& value) {
-    glUniform1f(glGetUniformLocation(id, uniformName.c_str()), value);
-}
-void ShaderProgram::setUniform(const std::string& uniformName, const glm::mat4& value) {
-    glUniformMatrix4fv(glGetUniformLocation(id, uniformName.c_str()), 1, GL_FALSE, glm::value_ptr(value));
-}
-void ShaderProgram::setUniform(const std::string& uniformName, const glm::vec3& value) {
-    glUniform3fv(glGetUniformLocation(id, uniformName.c_str()), 1, glm::value_ptr(value));
-}
-void ShaderProgram::setUniform(const std::string& uniformName, const glm::mat3& value) {
-    glad_glUniformMatrix3fv(glGetUniformLocation(id, uniformName.c_str()), 1, GL_FALSE, glm::value_ptr(value));
-}
+    void ShaderProgram::setUniform(const std::string& uniformName, bool value) {
+        glUniform1i(glGetUniformLocation(id, uniformName.c_str()), value);
+    }
+    void ShaderProgram::setUniform(const std::string& uniformName, float value) {
+        glUniform1f(glGetUniformLocation(id, uniformName.c_str()), value);
+    }
+    void ShaderProgram::setUniform(const std::string& uniformName, const glm::mat4& value) {
+        glUniformMatrix4fv(glGetUniformLocation(id, uniformName.c_str()), 1, GL_FALSE, glm::value_ptr(value));
+    }
+    void ShaderProgram::setUniform(const std::string& uniformName, const glm::vec3& value) {
+        glUniform3fv(glGetUniformLocation(id, uniformName.c_str()), 1, glm::value_ptr(value));
+    }
+    void ShaderProgram::setUniform(const std::string& uniformName, const glm::mat3& value) {
+        glad_glUniformMatrix3fv(glGetUniformLocation(id, uniformName.c_str()), 1, GL_FALSE, glm::value_ptr(value));
+    }
 
 }// namespace Ouroboros

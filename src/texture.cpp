@@ -1,9 +1,12 @@
 #include <texture.h>
 
 namespace Ouroboros {
+
     Texture::Texture(const std::string& aSourcePath, const uint8_t& aTextureUnit) : mTextureUnit(aTextureUnit) {
+        mFilename = aSourcePath.substr(aSourcePath.find_last_of('\\')+1);
         mID = loadFromFile(aSourcePath);
     }
+
     Texture::Texture(Texture&& aOther) noexcept {
         mID = std::exchange(aOther.mID, 0);
     }
@@ -25,6 +28,10 @@ namespace Ouroboros {
     void Texture::unbind() const {
         glActiveTexture(GL_TEXTURE0 + mTextureUnit);
         glBindTexture(Target, mID);
+    }
+
+    const std::string Texture::path() const {
+        return mFilename;
     }
 
     Texture::~Texture() {
@@ -63,11 +70,9 @@ namespace Ouroboros {
     }
 
     Diffuse::Diffuse(const std::string& aSourcePath) : Texture(aSourcePath, cTextureUnitDiffuse) {
-        mID = loadFromFile(aSourcePath);
     }
 
     Specular::Specular(const std::string& aSourcePath, float aShininess) : Texture(aSourcePath, cTextureUnitSpecular) {
-        mID = loadFromFile(aSourcePath);
         mShininess = aShininess;
     }
 

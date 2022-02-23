@@ -14,7 +14,6 @@ struct Material {
 
 struct DirectionalLight {
     vec3 direction;
-
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
@@ -35,6 +34,7 @@ struct PointLight{
 struct Spotlight{
     vec3 position;
     vec3 direction;
+
     float cutoff_cosine;
     float outer_cutoff_cosine;
 

@@ -18,7 +18,8 @@ add_executable(${PROJECT_NAME}
         src/texture.cpp
         src/scene.cpp
         src/light.cpp
-        src/mesh.cpp src/mesh.cpp)
+        src/mesh.cpp 
+        src/model.cpp)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 
@@ -35,6 +36,15 @@ elseif (${CMAKE_BUILD_TYPE} STREQUAL Debug)
 endif ()
 
 target_link_libraries(${PROJECT_NAME} ${GLFW})
+
+if (${CMAKE_BUILD_TYPE} STREQUAL Release)
+    find_library(ASSIMP assimp-vc142-mt ${PROJECT_SOURCE_DIR}/lib/Release)
+elseif (${CMAKE_BUILD_TYPE} STREQUAL Debug)
+    find_library(ASSIMP assimp-vc142-mtd ${PROJECT_SOURCE_DIR}/lib/Debug)
+endif ()
+
+target_link_libraries(${PROJECT_NAME} ${ASSIMP})
+
 
 add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory

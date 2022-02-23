@@ -15,9 +15,13 @@
 #include <camera.h>
 #include <scene.h>
 #include <light.h>
+#include <model.h>
+
 /* TODO
  *  Texture refactoring
  *  Mesh to load interesting models
+ *  fmt library for io
+ *  remove exceptions for checked result akin to rust result or std::expected
  *  Scene graph node data type
  *  General nodes
  *  Mesh nodes
@@ -29,8 +33,8 @@
  * */
 
 auto camera = std::make_shared<Ouroboros::Camera>(glm::vec3(0.0f, 1.0f, 15.0f),
-                                                               glm::vec3(0.0f, 0.0f, -1.0f),
-                                                               glm::vec3(0.0f, 1.0f, 0.0f));
+                                                  glm::vec3(0.0f, 0.0f, -1.0f),
+                                                  glm::vec3(0.0f, 1.0f, 0.0f));
 bool firstMouse = true;
 float lastX = 800.0f / 2.0;
 float lastY = 600.0 / 2.0;
@@ -87,24 +91,21 @@ int main() {
     camera->setAspectRatio(width, height);
 
     auto shader = std::make_shared<Ouroboros::ShaderProgram>(
-            Shader(R"(..\resources\shaders\vertex.shader)", GL_VERTEX_SHADER),
-            Shader(R"(..\resources\shaders\fragment.shader)", GL_FRAGMENT_SHADER));
-
-
-    auto boxTextureDiffuse = std::make_shared<Ouroboros::Diffuse>(R"(..\resources\textures\tiles.png)");
-    auto boxTextureSpecular = std::make_shared<Ouroboros::Specular>(R"(..\resources\textures\tiles.png)");
-
-    auto planeTextureDiffuse = std::make_shared<Ouroboros::Diffuse>(R"(..\resources\textures\wall.png)");
-    auto planeTextureSpecular = std::make_shared<Ouroboros::Specular>(R"(..\resources\textures\wall.png)");
+            Shader(R"(..\resources\shaders\model_loading_vertex.shader)", GL_VERTEX_SHADER),
+            Shader(R"(..\resources\shaders\model_loading_fragment.shader)", GL_FRAGMENT_SHADER));
 
     shader->use();
 
-    auto spotlight = Ouroboros::Spotlight(shader, camera->position(), camera->direction());
+    shader->setUniform("projection", camera->projection());
+    shader->setUniform("view", camera->view());
 
-    auto scene = Ouroboros::Scene();
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));    
+    shader->setUniform("model", model);
+    Ouroboros::Model backpack(R"(..\resources\models\backpack\backpack.obj)");
 
-
-    auto processInput = [&spotlight](GLFWwindow *window, float deltaTime) {
+    auto processInput = [](GLFWwindow *window, float deltaTime) {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(window, true);
         }
@@ -130,13 +131,10 @@ int main() {
         lastFrame = currentFrame;
 
         processInput(window, deltaTime);
-        spotlight.setPosition(camera->position());
-        spotlight.setDirection(camera->direction());
 
         glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        scene.render();
+        backpack.draw(*shader);
 
         glfwPollEvents();
         glfwSwapBuffers(window);

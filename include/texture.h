@@ -8,11 +8,14 @@
 #include <GLFW/glfw3.h>
 
 #include <stb_image.h>
+
 //TODO multiple textures using
-// each object has at least several textures - diffuse map, specular map, normal map, etc.
-// we can configure texture units to correspond to this types of textures
-// for instance, texture unit 0 GL_TEXTURE0 is always a diffuse map, and so on
+// Each object has at least several textures - diffuse map, specular map, normal map, etc.
+// We can configure texture units to correspond to this types of textures
+// For instance, texture unit 0 GL_TEXTURE0 is always a diffuse map, and so on
+
 namespace Ouroboros {
+
     class Texture {
     public:
         Texture(const Texture&) = delete;
@@ -23,11 +26,14 @@ namespace Ouroboros {
 
         void bind() const;
         void unbind() const;
-
+        
+        const std::string path() const;
+        
         virtual ~Texture();
 
     protected:
         uint32_t mID{};
+        // This is rather dirty hack. Try to enforce the texture unit at compile time somehow
         const uint8_t mTextureUnit = 0;
         static constexpr GLenum Target = GL_TEXTURE_2D;
         static constexpr GLenum Type = GL_UNSIGNED_BYTE;
@@ -35,6 +41,7 @@ namespace Ouroboros {
         static constexpr GLenum FilterMag = GL_LINEAR;
         static constexpr GLenum WrapS = GL_REPEAT;
         static constexpr GLenum WrapT = GL_REPEAT;
+        std::string mFilename;
 
     protected:
         Texture(const std::string& aSourcePath, const uint8_t&);
@@ -44,22 +51,30 @@ namespace Ouroboros {
     class Diffuse : public Texture {
     public:
         explicit Diffuse(const std::string& aSourcePath);
+        // explicit Diffuse(const std::string_view& aSourcePath);
         ~Diffuse() override = default;
 
-    private:
+    public:
         static constexpr uint8_t cTextureUnitDiffuse = 0;
     };
 
     class Specular : public Texture {
     public:
         explicit Specular(const std::string& aSourcePath, float aShininess = 32.0f);
+        // explicit Specular(const std::string_view& aSourcePath, float aShininess = 32.0f);
+
         ~Specular() override = default;
-    private:
+
+    public:
         static constexpr uint8_t cTextureUnitSpecular = 1;
+
+    private:
         float mShininess;
     };
 
     class Normal : public Texture {
+    public:
+        static constexpr uint8_t cTextureUnitNormal = 2;
     };
 
 }// namespace Ouroboros

@@ -4,6 +4,8 @@
 #include <memory>
 #include <set>
 
+#include <model.h>
+
 namespace Ouroboros {
     class Scene {
     public:
