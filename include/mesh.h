@@ -1,11 +1,12 @@
-//
-// Created by Ihor Zvieriev on 16.01.2022.
-//
-
 #ifndef ENTRYPOINT_MESH_H
 #define ENTRYPOINT_MESH_H
 
 #include <glm/glm.hpp>
+
+#include <vector>
+
+#include <texture.h>
+#include <shaderprogram.h>
 
 namespace Ouroboros {
     struct Vertex {
@@ -14,7 +15,17 @@ namespace Ouroboros {
         glm::vec2 mTextureCoordinates;
     };
 
-    struct Mesh {
+    class Mesh {
+    public:
+        Mesh(std::vector<Vertex> &&, std::vector<uint32_t> &&, std::vector<Texture> &&);
+
+        void draw(ShaderProgram &);
+
+    private:
+        uint32_t VBO, EBO, VAO;
+
+    private:
+        void setup();
     };
 
 }// namespace Ouroboros
