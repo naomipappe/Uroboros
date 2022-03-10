@@ -1,5 +1,5 @@
 #include <light.h>
-namespace Ouroboros {
+namespace Uroboros {
 
     Light::Light(std::shared_ptr<ShaderProgram> shader) {
         m_shader = std::move(shader);

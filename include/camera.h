@@ -9,7 +9,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-namespace Ouroboros {
+namespace Uroboros {
     class Camera {
     public:
         enum class CameraMovement { Forward,

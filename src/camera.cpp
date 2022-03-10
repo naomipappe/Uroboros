@@ -1,6 +1,6 @@
 #include <camera.h>
 
-namespace Ouroboros {
+namespace Uroboros {
     Camera::Camera(const glm::vec3& cameraPos, const glm::vec3& cameraFront, const glm::vec3& cameraUp) : worldUp(cameraUp),
                                                                                                           m_position(cameraPos),
                                                                                                           m_frontDirection(cameraFront),

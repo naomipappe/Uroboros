@@ -7,7 +7,7 @@
 
 #include <shaderprogram.h>
 #include <camera.h>
-namespace Ouroboros {
+namespace Uroboros {
     class Light {
     public:
         Light() = delete;

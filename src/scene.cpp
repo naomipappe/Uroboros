@@ -3,7 +3,7 @@
 //
 
 #include <scene.h>
-namespace Ouroboros {
+namespace Uroboros {
     Scene::Scene() {
     }
 

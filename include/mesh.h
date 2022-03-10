@@ -7,7 +7,7 @@
 
 #include <texture.h>
 #include <shaderprogram.h>
-namespace Ouroboros {
+namespace Uroboros {
     struct Vertex {
         glm::vec3 mPosition;
         glm::vec3 mNormal;

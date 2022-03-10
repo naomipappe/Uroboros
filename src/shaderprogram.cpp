@@ -1,5 +1,5 @@
 #include <shaderprogram.h>
-namespace Ouroboros {
+namespace Uroboros {
 
     const std::string ShaderProgram::diffuseSamplerName = "material.diffuse_map";
     const std::string ShaderProgram::specularSamplerName = "material.specular_map";

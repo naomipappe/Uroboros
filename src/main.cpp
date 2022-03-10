@@ -32,7 +32,7 @@
  *  Fixing warnings
  * */
 
-auto camera = std::make_shared<Ouroboros::Camera>(glm::vec3(0.0f, 1.0f, 15.0f),
+auto camera = std::make_shared<Uroboros::Camera>(glm::vec3(0.0f, 1.0f, 15.0f),
                                                   glm::vec3(0.0f, 0.0f, -1.0f),
                                                   glm::vec3(0.0f, 1.0f, 0.0f));
 bool firstMouse = true;
@@ -90,7 +90,7 @@ int main() {
 
     camera->setAspectRatio(width, height);
 
-    auto shader = std::make_shared<Ouroboros::ShaderProgram>(
+    auto shader = std::make_shared<Uroboros::ShaderProgram>(
             Shader(R"(..\resources\shaders\model_loading_vertex.shader)", GL_VERTEX_SHADER),
             Shader(R"(..\resources\shaders\model_loading_fragment.shader)", GL_FRAGMENT_SHADER));
 
@@ -103,23 +103,23 @@ int main() {
     model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
     model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));    
     shader->setUniform("model", model);
-    Ouroboros::Model backpack(R"(..\resources\models\backpack\backpack.obj)");
+    Uroboros::Model backpack(R"(..\resources\models\backpack\backpack.obj)");
 
     auto processInput = [](GLFWwindow *window, float deltaTime) {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(window, true);
         }
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-            camera->keyboardInput(Ouroboros::Camera::CameraMovement::Forward, deltaTime);
+            camera->keyboardInput(Uroboros::Camera::CameraMovement::Forward, deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-            camera->keyboardInput(Ouroboros::Camera::CameraMovement::Backward, deltaTime);
+            camera->keyboardInput(Uroboros::Camera::CameraMovement::Backward, deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-            camera->keyboardInput(Ouroboros::Camera::CameraMovement::Left, deltaTime);
+            camera->keyboardInput(Uroboros::Camera::CameraMovement::Left, deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-            camera->keyboardInput(Ouroboros::Camera::CameraMovement::Right, deltaTime);
+            camera->keyboardInput(Uroboros::Camera::CameraMovement::Right, deltaTime);
         }
     };
 

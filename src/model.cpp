@@ -1,19 +1,19 @@
 #include "model.h"
 
-namespace Ouroboros {
+namespace Uroboros {
 
-    std::vector<std::shared_ptr<Texture>> Ouroboros::Model::storage;
+    std::vector<std::shared_ptr<Texture>> Uroboros::Model::storage;
 
     Model::Model(const std::string& aPath) {
         load(aPath);
     }
-    void Ouroboros::Model::draw(ShaderProgram& aProgram) {
+    void Uroboros::Model::draw(ShaderProgram& aProgram) {
         for (auto& mesh : mMeshes) {
             mesh.draw(aProgram);
         }
     }
 
-    void Ouroboros::Model::load(const std::string& aPath) {
+    void Uroboros::Model::load(const std::string& aPath) {
         Assimp::Importer importer;
         const auto scene = importer.ReadFile(aPath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_OptimizeMeshes);
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
@@ -24,7 +24,7 @@ namespace Ouroboros {
         process(scene->mRootNode, scene);
     }
 
-    void Ouroboros::Model::process(aiNode* aNode, const aiScene* aScene) {
+    void Uroboros::Model::process(aiNode* aNode, const aiScene* aScene) {
         for (uint32_t i = 0; i < aNode->mNumMeshes; ++i) {
             aiMesh* mesh = aScene->mMeshes[aNode->mMeshes[i]];
             mMeshes.push_back(process(mesh, aScene));
@@ -34,7 +34,7 @@ namespace Ouroboros {
         }
     }
 
-    Mesh Ouroboros::Model::process(aiMesh* aMesh, const aiScene* aScene) {
+    Mesh Uroboros::Model::process(aiMesh* aMesh, const aiScene* aScene) {
         std::vector<Vertex> vertices;
         std::vector<uint32_t> indices;
         std::vector<std::shared_ptr<Texture>> textures;
@@ -68,7 +68,7 @@ namespace Ouroboros {
         return Mesh(vertices, indices, textures);
     }
 
-    void Ouroboros::Model::loadMaterialTextures(aiMaterial* aMaterial, aiTextureType aType, std::vector<std::shared_ptr<Texture>>& textures) {
+    void Uroboros::Model::loadMaterialTextures(aiMaterial* aMaterial, aiTextureType aType, std::vector<std::shared_ptr<Texture>>& textures) {
         for (uint32_t i = 0; i < aMaterial->GetTextureCount(aType); ++i) {
             aiString str;
             aMaterial->GetTexture(aType, i, &str);

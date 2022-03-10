@@ -6,7 +6,7 @@
 
 #include <model.h>
 
-namespace Ouroboros {
+namespace Uroboros {
     class Scene {
     public:
         explicit Scene();

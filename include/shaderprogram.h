@@ -13,7 +13,7 @@
 // Figure out some common shader variable names
 // Use them to generalize working with shaders
 // 1. Set shader uniforms not by name, but by predefined methods
-namespace Ouroboros {
+namespace Uroboros {
     class ShaderProgram {
     public:
         ShaderProgram() = delete;

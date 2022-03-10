@@ -1,7 +1,7 @@
 #include <mesh.h>
 
 
-namespace Ouroboros {
+namespace Uroboros {
     Mesh::Mesh(std::vector<Vertex> &aVertices, std::vector<uint32_t> &aIndices, std::vector<std::shared_ptr<Texture>> &aTextures) {
         mVertices = aVertices;
         mIndices = aIndices;

@@ -14,7 +14,7 @@
 // We can configure texture units to correspond to this types of textures
 // For instance, texture unit 0 GL_TEXTURE0 is always a diffuse map, and so on
 
-namespace Ouroboros {
+namespace Uroboros {
 
     class Texture {
     public:
