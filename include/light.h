@@ -10,66 +10,93 @@
 namespace Uroboros {
     class Light {
     public:
-        Light() = delete;
-        void setAmbient(glm::vec3 ambient) {
-            m_ambient = ambient;
-            m_shader->setUniform("light.ambient", m_ambient);
-        };
-        void setDiffuse(glm::vec3 diffuse) {
-            m_diffuse = diffuse;
-            m_shader->setUniform("light.diffuse", m_diffuse);
-        };
-        void setSpecular(glm::vec3 specular) {
-            m_specular = specular;
-            m_shader->setUniform("light.specular", m_specular);
-        };
+        virtual void setAmbient(const glm::vec3& aAmbientColor) = 0;
+        virtual void setDiffuse(const glm::vec3& aDiffuseColor) = 0;
+        virtual void setSpecular(const glm::vec3& aSpecularColor) = 0;
+
+        virtual ~Light() = default;
 
     protected:
+        Light() = default;
         explicit Light(std::shared_ptr<ShaderProgram> shader);
         Light(const Light& other) = default;
         Light(Light&& other) = default;
 
     protected:
-        glm::vec3 m_ambient = glm::vec3(0.2f);
-        glm::vec3 m_diffuse = glm::vec3(0.5f);
-        glm::vec3 m_specular = glm::vec3(1.0f);
-        std::shared_ptr<ShaderProgram> m_shader;
+        //TODO Do I really need to store the shader pointer here?
+        std::shared_ptr<ShaderProgram> mShader;
+        glm::vec3 mAmbient = glm::vec3(0.2f);
+        glm::vec3 mDiffuse = glm::vec3(0.5f);
+        glm::vec3 mSpecular = glm::vec3(1.0f);
     };
+
     class DirectionalLight : public Light {
     public:
-        DirectionalLight(std::shared_ptr<ShaderProgram> shader, const glm::vec3& direction);
-        [[nodiscard, maybe_unused]] glm::vec3 direction() const;
+        DirectionalLight(const std::shared_ptr<ShaderProgram>& aShader, const glm::vec3& aDirection);
+        [[nodiscard]] const glm::vec3& getDirection() const;
+        void setDirection(const glm::vec3& aDirection);
+
+        void setAmbient(const glm::vec3& aAmbientColor) override;
+        void setDiffuse(const glm::vec3& aDiffuseColor) override;
+        void setSpecular(const glm::vec3& aSpecularColor) override;
 
     private:
-        glm::vec3 m_direction;
+        glm::vec3 mDirection;
+        inline static const std::string cDirectionUniformName{"dirLight.direction"};
+        inline static const std::string cAmbientUniformName{"dirLight.ambient"};
+        inline static const std::string cDiffuseUniformName{"dirLight.diffuse"};
+        inline static const std::string cSpecularUniformName{"dirLight.specular"};
     };
+
     class PointLight : public Light {
     public:
-        PointLight(std::shared_ptr<ShaderProgram> shader, const glm::vec3& position);
-        [[nodiscard, maybe_unused]] glm::vec3 position() const;
+        PointLight(const std::shared_ptr<ShaderProgram>& aShader, const glm::vec3& aPosition);
+        [[nodiscard]] const glm::vec3& getPosition() const;
+        void setPosition(const glm::vec3& aPosition);
+        void setAmbient(const glm::vec3& aAmbientColor) override;
+        void setDiffuse(const glm::vec3& aDiffuseColor) override;
+        void setSpecular(const glm::vec3& aSpecularColor) override;
+
+    protected:
+        PointLight() = default;
+
+    protected:
+        glm::vec3 mPosition{};
+        static constexpr float cConstant = 1.0f;
+        static constexpr float cLinear = 0.045f;
+        static constexpr float cQuadratic = 0.0075f;
 
     private:
-        glm::vec3 m_position;
-        float m_constant = 1.0f;
-        float m_linear = 0.045f;
-        float m_quadratic = 0.0075f;
+        static uint8_t counter;
+        std::string mIndex;
+        // Later try to move to char arrays?
+
+        std::string mPositionUniformName;
+        std::string mAmbientUniformName;
+        std::string mDiffuseUniformName;
+        std::string mSpecularUniformName;
     };
-    class Spotlight : public Light {
+
+    class Spotlight : public PointLight {
     public:
-        Spotlight(std::shared_ptr<ShaderProgram> shader, const glm::vec3& position, const glm::vec3& direction);
-        [[nodiscard, maybe_unused]] glm::vec3 position() const;
-        [[nodiscard, maybe_unused]] glm::vec3 direction() const;
-        void setPosition(const glm::vec3& position);
-        void setDirection(const glm::vec3& direction);
+        Spotlight(const std::shared_ptr<ShaderProgram>& shader, const glm::vec3& aPosition, const glm::vec3& aDirection);
+        [[nodiscard]] const glm::vec3& getDirection() const;
+        void setDirection(const glm::vec3& aDirection);
+        void setAmbient(const glm::vec3& aAmbientColor) override;
+        void setDiffuse(const glm::vec3& aDiffuseColor) override;
+        void setSpecular(const glm::vec3& aSpecularColor) override;
 
     private:
-        glm::vec3 m_position;
-        glm::vec3 m_direction;
-        float m_cutoff = glm::radians(12.5f);
-        float m_outercutoff = glm::radians(17.5f);
-        float m_constant = 1.0f;
-        float m_linear = 0.007f;
-        float m_quadratic = 0.0002f;
+        glm::vec3 mDirection{};
+        static constexpr float cCutOff = glm::radians(12.5f);
+        static constexpr float cOuterCutOff = glm::radians(17.5f);
+
+        inline static const std::string cDirectionUniformName{"spotLight.direction"};
+        inline static const std::string cPositionUniformName{"spotLight.position"};
+
+        inline static const std::string cAmbientUniformName{"spotLight.ambient"};
+        inline static const std::string cDiffuseUniformName{"spotLight.diffuse"};
+        inline static const std::string cSpecularUniformName{"spotLight.specular"};
     };
 }// namespace Ouroboros
 #endif//ENTRYPOINT_LIGHT_H

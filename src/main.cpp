@@ -91,19 +91,28 @@ int main() {
     camera->setAspectRatio(width, height);
 
     auto shader = std::make_shared<Uroboros::ShaderProgram>(
-            Shader(R"(..\resources\shaders\model_loading_vertex.shader)", GL_VERTEX_SHADER),
-            Shader(R"(..\resources\shaders\model_loading_fragment.shader)", GL_FRAGMENT_SHADER));
+            Shader(R"(..\resources\shaders\vertex.shader)", GL_VERTEX_SHADER),
+            Shader(R"(..\resources\shaders\fragment.shader)", GL_FRAGMENT_SHADER));
 
     shader->use();
 
-    shader->setUniform("projection", camera->projection());
-    shader->setUniform("view", camera->view());
-
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-    model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));    
+    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 13.0f));
+    model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
     shader->setUniform("model", model);
+
+    glm::mat4 normal(model);
+    normal = glm::transpose(glm::inverse(normal));
+    shader->setUniform("normalMatrix", glm::mat3(normal));
+
     Uroboros::Model backpack(R"(..\resources\models\backpack\backpack.obj)");
+
+    auto dir = Uroboros::DirectionalLight(shader, glm::vec3(0, -1, 0));
+    //TODO Encapsulate this settings in the material type
+    // Material type should encapsulate the material of object itself and
+    // The rendering approach to lighting simulation
+    shader->setUniform("material.shininess", 32.0f);
+    shader->setUniform("PointLigthsCount", 0);
 
     auto processInput = [](GLFWwindow *window, float deltaTime) {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -131,6 +140,10 @@ int main() {
         lastFrame = currentFrame;
 
         processInput(window, deltaTime);
+        shader->setUniform("projection", camera->projection());
+        shader->setUniform("view", camera->view());
+        shader->setUniform("viewPos", camera->position());
+
 
         glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

@@ -33,9 +33,9 @@ namespace Uroboros {
     private:
         uint32_t id;
         static constexpr uint16_t infoLogSize = 512;
-        static const std::string diffuseSamplerName;
-        static const std::string specularSamplerName;
-        static const std::string normalSamplerName;
+        inline static const std::string cDiffuseSamplerName = "material.diffuse_map";
+        inline static const std::string cSpecularSamplerName = "material.specular_map";
+        inline static const std::string cNormalSamlerName = "material.normal_map";
 
     private:
         void createShaderProgram(uint32_t vertexShaderId, uint32_t fragmentShaderId);

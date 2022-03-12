@@ -64,7 +64,7 @@ namespace Uroboros {
             loadMaterialTextures(material, aiTextureType_DIFFUSE, textures);
             loadMaterialTextures(material, aiTextureType_SPECULAR, textures);
         }
-        return Mesh(vertices, indices, textures);
+        return Mesh{vertices, indices, textures};
     }
 
     void Uroboros::Model::loadMaterialTextures(aiMaterial* aMaterial, aiTextureType aType, std::vector<std::shared_ptr<Texture>>& textures) {

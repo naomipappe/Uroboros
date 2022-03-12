@@ -1,10 +1,5 @@
 #include <shaderprogram.h>
 namespace Uroboros {
-
-    const std::string ShaderProgram::diffuseSamplerName = "material.diffuse_map";
-    const std::string ShaderProgram::specularSamplerName = "material.specular_map";
-    const std::string ShaderProgram::normalSamplerName = "material.normal_map";
-
     ShaderProgram::ShaderProgram(Shader&& vertexShader, Shader&& fragmentShader) noexcept : id{} {
         createShaderProgram(vertexShader.getID(), fragmentShader.getID());
     }
@@ -29,9 +24,9 @@ namespace Uroboros {
 
         // After creating the shader program, we set samplers to appropriate units
         // This is assuming that each mesh has exactly one diffuse, specular and normal map
-        setUniform(diffuseSamplerName, Diffuse::cTextureUnitDiffuse);
-        setUniform(specularSamplerName, Specular::cTextureUnitSpecular);
-        setUniform(normalSamplerName, Normal::cTextureUnitNormal);
+        setUniform(cDiffuseSamplerName, Diffuse::cTextureUnitDiffuse);
+        setUniform(cSpecularSamplerName, Specular::cTextureUnitSpecular);
+        setUniform(cNormalSamlerName, Normal::cTextureUnitNormal);
     }
 
     ShaderProgram::~ShaderProgram() {
@@ -58,7 +53,7 @@ namespace Uroboros {
         glUniform3fv(glGetUniformLocation(id, uniformName.c_str()), 1, glm::value_ptr(value));
     }
     void ShaderProgram::setUniform(const std::string& uniformName, const glm::mat3& value) {
-        glad_glUniformMatrix3fv(glGetUniformLocation(id, uniformName.c_str()), 1, GL_FALSE, glm::value_ptr(value));
+        glUniformMatrix3fv(glGetUniformLocation(id, uniformName.c_str()), 1, GL_FALSE, glm::value_ptr(value));
     }
 
 }// namespace Ouroboros

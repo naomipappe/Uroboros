@@ -1,62 +1,141 @@
 #include <light.h>
 namespace Uroboros {
+    uint8_t PointLight::counter = 0;
 
-    Light::Light(std::shared_ptr<ShaderProgram> shader) {
-        m_shader = std::move(shader);
-        m_shader->setUniform("light.ambient", m_ambient);
-        m_shader->setUniform("light.diffuse", m_diffuse);
-        m_shader->setUniform("light.specular", m_specular);
+    Light::Light(std::shared_ptr<ShaderProgram> aShader) {
+        mShader = std::move(aShader);
     }
 
-    DirectionalLight::DirectionalLight(std::shared_ptr<ShaderProgram> shader, const glm::vec3& direction)
-        : Light(std::move(shader)),
-          m_direction(direction) {
-        m_shader->use();
-        m_shader->setUniform("light.direction", m_direction);
+    DirectionalLight::DirectionalLight(const std::shared_ptr<ShaderProgram>& aShader, const glm::vec3& aDirection)
+        : Light(aShader),
+          mDirection(aDirection) {
+        mShader->use();
+
+        mShader->setUniform(cDirectionUniformName, mDirection);
+        mShader->setUniform(cAmbientUniformName, mAmbient);
+        mShader->setUniform(cDiffuseUniformName, mDiffuse);
+        mShader->setUniform(cSpecularUniformName, mSpecular);
     }
 
-    glm::vec3 DirectionalLight::direction() const {
-        return m_direction;
+    const glm::vec3& DirectionalLight::getDirection() const {
+        return mDirection;
     }
 
-    PointLight::PointLight(std::shared_ptr<ShaderProgram> shader, const glm::vec3& position)
-        : Light(std::move(shader)),
-          m_position(position) {
-        m_shader->use();
-        m_shader->setUniform("light.constant", m_constant);
-        m_shader->setUniform("light.position", m_position);
-        m_shader->setUniform("light.linear", m_linear);
-        m_shader->setUniform("light.quadratic", m_quadratic);
-    }
-    glm::vec3 PointLight::position() const {
-        return m_position;
+    void DirectionalLight::setDirection(const glm::vec3& aDirection) {
+        mShader->setUniform(cDirectionUniformName, aDirection);
+        mDirection = aDirection;
     }
 
-    Spotlight::Spotlight(std::shared_ptr<ShaderProgram> shader, const glm::vec3& position, const glm::vec3& direction)
-        : Light(std::move(shader)),
-          m_position(position),
-          m_direction(direction) {
-        m_shader->use();
-        m_shader->setUniform("light.position", m_position);
-        m_shader->setUniform("light.direction", m_direction);
-        m_shader->setUniform("light.cutoff_cosine", glm::cos(m_cutoff));
-        m_shader->setUniform("light.outer_cutoff_cosine", glm::cos(m_outercutoff));
-        m_shader->setUniform("light.constant", m_constant);
-        m_shader->setUniform("light.linear", m_linear);
-        m_shader->setUniform("light.quadratic", m_quadratic);
+    void DirectionalLight::setAmbient(const glm::vec3& aAmbientColor) {
+        mShader->setUniform(cAmbientUniformName, aAmbientColor);
+        mAmbient = aAmbientColor;
     }
-    glm::vec3 Spotlight::position() const {
-        return m_position;
+
+    void DirectionalLight::setDiffuse(const glm::vec3& aDiffuseColor) {
+        mShader->setUniform(cDiffuseUniformName, aDiffuseColor);
+        mDiffuse = aDiffuseColor;
     }
-    glm::vec3 Spotlight::direction() const {
-        return m_direction;
+
+    void DirectionalLight::setSpecular(const glm::vec3& aSpecularColor) {
+        mShader->setUniform(cSpecularUniformName, aSpecularColor);
+        mSpecular = aSpecularColor;
     }
-    void Spotlight::setPosition(const glm::vec3& position) {
-        m_position = position;
-        m_shader->setUniform("light.position", m_position);
+
+    PointLight::PointLight(const std::shared_ptr<ShaderProgram>& aShader, const glm::vec3& aPosition)
+        : Light(aShader),
+          mPosition(aPosition),
+          mIndex(std::to_string(counter)) {
+        ++counter;
+        mShader->use();
+
+        mPositionUniformName = "pointLights[" + mIndex + "].position";
+        mAmbientUniformName = "pointLights[" + mIndex + "].ambient";
+        mDiffuseUniformName = "pointLights[" + mIndex + "].diffuse";
+        mSpecularUniformName = "pointLights[" + mIndex + "].specular";
+
+        mShader->setUniform(mPositionUniformName, aPosition);
+        mShader->setUniform(mAmbientUniformName, mAmbient);
+        mShader->setUniform(mDiffuseUniformName, mDiffuse);
+        mShader->setUniform(mSpecularUniformName, mSpecular);
+
+        mShader->setUniform("pointLights[" + mIndex + "].constant", cConstant);
+        mShader->setUniform("pointLights[" + mIndex + "].linear", cLinear);
+        mShader->setUniform("pointLights[" + mIndex + "].quadratic", cQuadratic);
     }
-    void Spotlight::setDirection(const glm::vec3& direction) {
-        m_direction = direction;
-        m_shader->setUniform("light.direction", m_direction);
+
+    const glm::vec3& PointLight::getPosition() const {
+        return mPosition;
     }
-}// namespace Ouroboros
+
+    void PointLight::setPosition(const glm::vec3& aPosition) {
+        mShader->use();
+        mShader->setUniform(mPositionUniformName, aPosition);
+        mPosition = aPosition;
+    }
+
+    void PointLight::setAmbient(const glm::vec3& aAmbientColor) {
+        mShader->use();
+        mShader->setUniform(mAmbientUniformName, aAmbientColor);
+        mAmbient = aAmbientColor;
+    }
+
+    void PointLight::setDiffuse(const glm::vec3& aDiffuseColor) {
+        mShader->use();
+        mShader->setUniform(mDiffuseUniformName, aDiffuseColor);
+        mDiffuse = aDiffuseColor;
+    }
+
+    void PointLight::setSpecular(const glm::vec3& aSpecularColor) {
+        mShader->use();
+        mShader->setUniform(mSpecularUniformName, aSpecularColor);
+        mSpecular = aSpecularColor;
+    }
+
+    Spotlight::Spotlight(const std::shared_ptr<ShaderProgram>& aShader, const glm::vec3& aPosition, const glm::vec3& aDirection) {
+        mShader = aShader;
+        mPosition = aPosition;
+        mDirection = aDirection;
+
+        mShader->use();
+        mShader->setUniform(cDirectionUniformName, mDirection);
+        mShader->setUniform(cPositionUniformName, mPosition);
+
+        mShader->setUniform(cAmbientUniformName, mAmbient);
+        mShader->setUniform(cDiffuseUniformName, mDiffuse);
+        mShader->setUniform(cSpecularUniformName, mSpecular);
+
+        mShader->setUniform("spotLight.constant", cConstant);
+        mShader->setUniform("spotLight.linear", cLinear);
+        mShader->setUniform("spotLight.quadratic", cQuadratic);
+        mShader->setUniform("spotLight.cutOff", cCutOff);
+        mShader->setUniform("spotLight.outerCutOff", cOuterCutOff);
+    }
+
+    const glm::vec3& Spotlight::getDirection() const {
+        return mDirection;
+    }
+
+    void Spotlight::setDirection(const glm::vec3& aDirection) {
+        mShader->use();
+        mShader->setUniform(cDirectionUniformName, aDirection);
+        mDirection = aDirection;
+    }
+
+    void Spotlight::setAmbient(const glm::vec3& aAmbientColor) {
+        mShader->use();
+        mShader->setUniform(cAmbientUniformName, aAmbientColor);
+        mAmbient = aAmbientColor;
+    }
+
+    void Spotlight::setDiffuse(const glm::vec3& aDiffuseColor) {
+        mShader->use();
+        mShader->setUniform(cDiffuseUniformName, aDiffuseColor);
+        mDiffuse = aDiffuseColor;
+    }
+
+    void Spotlight::setSpecular(const glm::vec3& aSpecularColor) {
+        mShader->use();
+        mShader->setUniform(cSpecularUniformName, aSpecularColor);
+        mSpecular = aSpecularColor;
+    }
+}// namespace Uroboros

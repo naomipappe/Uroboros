@@ -15,7 +15,7 @@
 namespace Uroboros {
     class Model {
     public:
-        Model(const std::string &aPath);
+        explicit Model(const std::string &aPath);
         void draw(ShaderProgram &aProgram);
 
     private:
