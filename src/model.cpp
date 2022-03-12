@@ -62,8 +62,7 @@ namespace Uroboros {
         if (aMesh->mMaterialIndex >= 0) {
             aiMaterial* material = aScene->mMaterials[aMesh->mMaterialIndex];
             loadMaterialTextures(material, aiTextureType_DIFFUSE, textures);
-            //std::vector<std::shared_ptr<Texture>> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR);
-            //textures.insert(textures.end(), std::make_move_iterator(specularMaps.begin()), std::make_move_iterator(specularMaps.end()));
+            loadMaterialTextures(material, aiTextureType_SPECULAR, textures);
         }
         return Mesh(vertices, indices, textures);
     }
