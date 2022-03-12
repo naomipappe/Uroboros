@@ -10,16 +10,31 @@
 #include <iostream>
 #include <set>
 
-#include <Shader.h>
-#include <ShaderProgram.h>
-#include <Camera.h>
-#include <Cube.h>
-#include <Scene.h>
-#include <Light.h>
+#include <shader.h>
+#include <shaderprogram.h>
+#include <camera.h>
+#include <scene.h>
+#include <light.h>
+#include <model.h>
 
-auto camera = std::make_shared<Camera>(glm::vec3(0.0f, 1.0f, 15.0f),
-                                       glm::vec3(0.0f, 0.0f, -1.0f),
-                                       glm::vec3(0.0f, 1.0f, 0.0f));
+/* TODO
+ *  Texture refactoring
+ *  Mesh to load interesting models
+ *  fmt library for io
+ *  remove exceptions for checked result akin to rust result or std::expected
+ *  Scene graph node data type
+ *  General nodes
+ *  Mesh nodes
+ *  Light nodes
+ *  Scene graph - creating, adding, traversing
+ *  Material system - simple materials that encapsulate shading model, textures and other related properties
+ *  GUI for editing object properties in real time
+ *  Fixing warnings
+ * */
+
+auto camera = std::make_shared<Uroboros::Camera>(glm::vec3(0.0f, 1.0f, 15.0f),
+                                                  glm::vec3(0.0f, 0.0f, -1.0f),
+                                                  glm::vec3(0.0f, 1.0f, 0.0f));
 bool firstMouse = true;
 float lastX = 800.0f / 2.0;
 float lastY = 600.0 / 2.0;
@@ -75,56 +90,36 @@ int main() {
 
     camera->setAspectRatio(width, height);
 
-    auto shader = std::make_shared<ShaderProgram>(
-            Shader(R"(..\resources\shaders\vertex.shader)", GL_VERTEX_SHADER),
-            Shader(R"(..\resources\shaders\fragment.shader)", GL_FRAGMENT_SHADER));
-
-
-    auto boxTexture = std::make_shared<Texture>(
-            R"(..\resources\textures\tiles.png)",
-            R"(..\resources\textures\tiles.png)", 64.0f);
-
-
-    auto planeTexture = std::make_shared<Texture>(
-            R"(..\tesources\textures\wall.png)",
-            R"(..\resources\textures\wall.png)", 64.0f);
+    auto shader = std::make_shared<Uroboros::ShaderProgram>(
+            Shader(R"(..\resources\shaders\model_loading_vertex.shader)", GL_VERTEX_SHADER),
+            Shader(R"(..\resources\shaders\model_loading_fragment.shader)", GL_FRAGMENT_SHADER));
 
     shader->use();
 
-    auto spotlight = Spotlight(shader, camera->position(), camera->direction());
+    shader->setUniform("projection", camera->projection());
+    shader->setUniform("view", camera->view());
 
-    auto plane = std::make_unique<Plane>(camera, shader, boxTexture);
-    plane->setPosition(glm::vec3(0.0f, -5.0f, 0.0f));
-    plane->setScale(glm::vec3(10.0f, 0.1f, 10.0f));
-
-    auto scene = Scene();
-    scene.setPlane(std::move(plane));
-    auto box1 = std::make_unique<Box>(camera, shader, planeTexture);
-    box1->setPosition(glm::vec3(-3.0f, 0.0f, 2.0f));
-    scene.addBox(std::move(box1));
-    auto box2 = std::make_unique<Box>(camera, shader, planeTexture);
-    box2->setPosition(glm::vec3(3.0f, 0.0f, 2.0f));
-    scene.addBox(std::move(box2));
-    auto box3 = std::make_unique<Box>(camera, shader, planeTexture);
-    box3->setPosition(glm::vec3(0.0f, 0.0f, -3.0f));
-    scene.addBox(std::move(box3));
-
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));    
+    shader->setUniform("model", model);
+    Uroboros::Model backpack(R"(..\resources\models\backpack\backpack.obj)");
 
     auto processInput = [](GLFWwindow *window, float deltaTime) {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(window, true);
         }
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-            camera->keyboardInput(Camera::CameraMovement::Forward, deltaTime);
+            camera->keyboardInput(Uroboros::Camera::CameraMovement::Forward, deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-            camera->keyboardInput(Camera::CameraMovement::Backward, deltaTime);
+            camera->keyboardInput(Uroboros::Camera::CameraMovement::Backward, deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-            camera->keyboardInput(Camera::CameraMovement::Left, deltaTime);
+            camera->keyboardInput(Uroboros::Camera::CameraMovement::Left, deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-            camera->keyboardInput(Camera::CameraMovement::Right, deltaTime);
+            camera->keyboardInput(Uroboros::Camera::CameraMovement::Right, deltaTime);
         }
     };
 
@@ -136,13 +131,10 @@ int main() {
         lastFrame = currentFrame;
 
         processInput(window, deltaTime);
-        spotlight.setPosition(camera->position());
-        spotlight.setDirection(camera->direction());
 
         glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        scene.render();
+        backpack.draw(*shader);
 
         glfwPollEvents();
         glfwSwapBuffers(window);
