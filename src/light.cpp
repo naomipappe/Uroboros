@@ -41,6 +41,10 @@ namespace Uroboros {
         mSpecular = aSpecularColor;
     }
 
+
+    PointLight::PointLight(const std::shared_ptr<ShaderProgram>& aShader) : Light(aShader) {
+    }
+
     PointLight::PointLight(const std::shared_ptr<ShaderProgram>& aShader, const glm::vec3& aPosition)
         : Light(aShader),
           mPosition(aPosition),
@@ -91,8 +95,8 @@ namespace Uroboros {
         mSpecular = aSpecularColor;
     }
 
-    Spotlight::Spotlight(const std::shared_ptr<ShaderProgram>& aShader, const glm::vec3& aPosition, const glm::vec3& aDirection) {
-        mShader = aShader;
+    Spotlight::Spotlight(const std::shared_ptr<ShaderProgram>& aShader, const glm::vec3& aPosition, const glm::vec3& aDirection)
+        : PointLight(aShader) {
         mPosition = aPosition;
         mDirection = aDirection;
 
@@ -137,5 +141,10 @@ namespace Uroboros {
         mShader->use();
         mShader->setUniform(cSpecularUniformName, aSpecularColor);
         mSpecular = aSpecularColor;
+    }
+    void Spotlight::setPosition(const glm::vec3& aPosition) {
+        mShader->use();
+        mShader->setUniform(cPositionUniformName, aPosition);
+        mPosition = aPosition;
     }
 }// namespace Uroboros

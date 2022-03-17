@@ -29,7 +29,7 @@ namespace Uroboros {
         glBindTexture(Target, mID);
     }
 
-    const std::string Texture::path() const {
+    const std::string& Texture::path() const {
         return mFilename;
     }
 

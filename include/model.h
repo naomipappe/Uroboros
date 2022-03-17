@@ -9,9 +9,11 @@
 #include <assimp/postprocess.h>
 
 #include <mesh.h>
+
 // Texture is loaded for each mesh, which can be a lot
 // Consider a globally stored textures with meshes holding only a reference / pointer to the said texture
 // This should be implemented as a Resource Manager or Resource Storage of some kind
+
 namespace Uroboros {
     class Model {
     public:

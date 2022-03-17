@@ -51,14 +51,15 @@ namespace Uroboros {
     class PointLight : public Light {
     public:
         PointLight(const std::shared_ptr<ShaderProgram>& aShader, const glm::vec3& aPosition);
-        [[nodiscard]] const glm::vec3& getPosition() const;
-        void setPosition(const glm::vec3& aPosition);
+        [[nodiscard]] virtual const glm::vec3& getPosition() const;
+        virtual void setPosition(const glm::vec3& aPosition);
+
         void setAmbient(const glm::vec3& aAmbientColor) override;
         void setDiffuse(const glm::vec3& aDiffuseColor) override;
         void setSpecular(const glm::vec3& aSpecularColor) override;
 
     protected:
-        PointLight() = default;
+        explicit PointLight(const std::shared_ptr<ShaderProgram>& aShader);
 
     protected:
         glm::vec3 mPosition{};
@@ -79,9 +80,13 @@ namespace Uroboros {
 
     class Spotlight : public PointLight {
     public:
-        Spotlight(const std::shared_ptr<ShaderProgram>& shader, const glm::vec3& aPosition, const glm::vec3& aDirection);
+        Spotlight(const std::shared_ptr<ShaderProgram>& aShader, const glm::vec3& aPosition, const glm::vec3& aDirection);
+
         [[nodiscard]] const glm::vec3& getDirection() const;
         void setDirection(const glm::vec3& aDirection);
+
+        void setPosition(const glm::vec3& aPosition) override;
+
         void setAmbient(const glm::vec3& aAmbientColor) override;
         void setDiffuse(const glm::vec3& aDiffuseColor) override;
         void setSpecular(const glm::vec3& aSpecularColor) override;

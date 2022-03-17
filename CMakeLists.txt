@@ -16,10 +16,10 @@ add_executable(${PROJECT_NAME}
         src/shaderprogram.cpp
         src/camera.cpp
         src/texture.cpp
-        src/scene.cpp
         src/light.cpp
-        src/mesh.cpp 
-        src/model.cpp)
+        src/mesh.cpp
+        src/model.cpp
+        src/node.cpp)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 

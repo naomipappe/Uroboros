@@ -32,9 +32,7 @@
  *  Fixing warnings
  * */
 
-auto camera = std::make_shared<Uroboros::Camera>(glm::vec3(0.0f, 1.0f, 15.0f),
-                                                  glm::vec3(0.0f, 0.0f, -1.0f),
-                                                  glm::vec3(0.0f, 1.0f, 0.0f));
+auto camera = std::make_shared<Uroboros::Camera>();
 bool firstMouse = true;
 float lastX = 800.0f / 2.0;
 float lastY = 600.0 / 2.0;
@@ -60,6 +58,7 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
 
 int main() {
     static const size_t width = 800, height = 600;
+
     stbi_set_flip_vertically_on_load(true);
 
     glfwInit();
@@ -80,6 +79,7 @@ int main() {
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
         throw std::runtime_error("GLAD failed to initialize");
     }
@@ -91,13 +91,13 @@ int main() {
     camera->setAspectRatio(width, height);
 
     auto shader = std::make_shared<Uroboros::ShaderProgram>(
-            Shader(R"(..\resources\shaders\vertex.shader)", GL_VERTEX_SHADER),
-            Shader(R"(..\resources\shaders\fragment.shader)", GL_FRAGMENT_SHADER));
+            Uroboros::Shader(R"(..\resources\shaders\vertex.shader)", Uroboros::Shader::Type::Vertex),
+            Uroboros::Shader(R"(..\resources\shaders\fragment_phong.shader)", Uroboros::Shader::Type::Fragment));
 
     shader->use();
 
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 13.0f));
+    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
     model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
     shader->setUniform("model", model);
 
@@ -107,12 +107,11 @@ int main() {
 
     Uroboros::Model backpack(R"(..\resources\models\backpack\backpack.obj)");
 
-    auto dir = Uroboros::DirectionalLight(shader, glm::vec3(0, -1, 0));
-    //TODO Encapsulate this settings in the material type
-    // Material type should encapsulate the material of object itself and
-    // The rendering approach to lighting simulation
     shader->setUniform("material.shininess", 32.0f);
-    shader->setUniform("PointLigthsCount", 0);
+    shader->setUniform("PointLightsCount", 0);
+
+    auto dir = Uroboros::DirectionalLight(shader, glm::vec3(0, -1, 0));
+    auto torch = Uroboros::Spotlight(shader, camera->position(), camera->direction());
 
     auto processInput = [](GLFWwindow *window, float deltaTime) {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -140,9 +139,13 @@ int main() {
         lastFrame = currentFrame;
 
         processInput(window, deltaTime);
+
         shader->setUniform("projection", camera->projection());
         shader->setUniform("view", camera->view());
         shader->setUniform("viewPos", camera->position());
+
+        torch.setPosition(camera->position());
+        torch.setDirection(camera->direction());
 
 
         glClearColor(0.4f, 0.4f, 0.4f, 1.0f);

@@ -9,11 +9,6 @@
 
 #include <stb_image.h>
 
-//TODO multiple textures using
-// Each object has at least several textures - diffuse map, specular map, normal map, etc.
-// We can configure texture units to correspond to this types of textures
-// For instance, texture unit 0 GL_TEXTURE0 is always a diffuse map, and so on
-
 namespace Uroboros {
 
     class Texture {
@@ -27,7 +22,7 @@ namespace Uroboros {
         void bind() const;
         void unbind() const;
         
-        const std::string path() const;
+        [[nodiscard]] const std::string& path() const;
         
         virtual ~Texture();
 

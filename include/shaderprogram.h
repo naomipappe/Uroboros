@@ -9,10 +9,11 @@
 #include <shader.h>
 #include <texture.h>
 
-//TODO
-// Figure out some common shader variable names
-// Use them to generalize working with shaders
-// 1. Set shader uniforms not by name, but by predefined methods
+//TODO Figure out the structure of the refactored engine model
+// 1. What is a material? What constitutes the material?
+// 2. What is a hierarchy of materials? Is there an inherent hierarchy?
+
+
 namespace Uroboros {
     class ShaderProgram {
     public:
