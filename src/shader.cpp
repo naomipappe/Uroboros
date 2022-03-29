@@ -1,13 +1,20 @@
 #include <shader.h>
 
+namespace Uroboros {
+    Shader::Shader(const std::string& aSourcePath, Type aType) : id{} {
+        std::string shaderSource = loadFromFile(aSourcePath);
+        int success;
+        auto shaderSourceRaw = shaderSource.c_str();
+        switch (aType) {
 
-Shader::Shader(const std::string& shaderSourcePath, GLenum shaderType) : id{} {
-    std::string shaderSource = loadFromFile(shaderSourcePath);
-    int success;
-    auto shaderSourceRaw = shaderSource.c_str();
-
-    id = glCreateShader(shaderType);
-    glShaderSource(id, 1, &shaderSourceRaw, nullptr);
+            case Type::Vertex:
+                id = glCreateShader(GL_VERTEX_SHADER);
+                break;
+            case Type::Fragment:
+                id = glCreateShader(GL_FRAGMENT_SHADER);
+                break;
+        }
+        glShaderSource(id, 1, &shaderSourceRaw, nullptr);
     glCompileShader(id);
     glGetShaderiv(id, GL_COMPILE_STATUS, &success);
     if (!success) {
@@ -25,13 +32,12 @@ Shader::~Shader() {
 	glDeleteShader(id);
 }
 
-std::string Shader::loadFromFile(const std::string& pathToFile)
-{
-	std::ifstream shaderFile;
+std::string Shader::loadFromFile(const std::string& aSourcePath) {
+    std::ifstream shaderFile;
     std::string shaderSource{};
     shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     try {
-        shaderFile.open(pathToFile);
+        shaderFile.open(aSourcePath);
         std::stringstream shaderStream;
         shaderStream << shaderFile.rdbuf();
         shaderFile.close();
@@ -45,3 +51,4 @@ std::string Shader::loadFromFile(const std::string& pathToFile)
 uint32_t Shader::getID() const {
 	return id;
 }
+}// namespace Uroboros

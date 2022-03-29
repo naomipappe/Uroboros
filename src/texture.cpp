@@ -1,7 +1,6 @@
 #include <texture.h>
 
 namespace Uroboros {
-
     Texture::Texture(const std::string& aSourcePath, const uint8_t& aTextureUnit) : mTextureUnit(aTextureUnit) {
         mFilename = aSourcePath.substr(aSourcePath.find_last_of('\\')+1);
         mID = loadFromFile(aSourcePath);
@@ -30,7 +29,7 @@ namespace Uroboros {
         glBindTexture(Target, mID);
     }
 
-    const std::string Texture::path() const {
+    const std::string& Texture::path() const {
         return mFilename;
     }
 

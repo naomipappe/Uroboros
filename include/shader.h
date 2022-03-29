@@ -8,19 +8,25 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-class Shader {
-public:
-    Shader(const std::string& shaderSourcePath, GLenum shaderType);
-    Shader(const Shader&) = delete;
-    Shader(Shader&& from) noexcept;
-    [[nodiscard]] uint32_t getID() const;
-    ~Shader();
+namespace Uroboros {
+    class Shader {
+    public:
+        enum class Type {
+            Vertex,
+            Fragment
+        };
+        Shader(const std::string& aSourcePath, Type aType);
+        Shader(const Shader&) = delete;
+        Shader(Shader&&) noexcept;
+        [[nodiscard]] uint32_t getID() const;
+        ~Shader();
 
-private:
-    static std::string loadFromFile(const std::string& pathToFile);
+    private:
+        static std::string loadFromFile(const std::string& aSourcePath);
 
-private:
-    uint32_t id;
-    static const size_t infoLogSize = 512;
-};
+    private:
+        uint32_t id;
+        static constexpr size_t infoLogSize = 512;
+    };
+}// namespace Uroboros
 #endif

@@ -9,10 +9,11 @@
 #include <shader.h>
 #include <texture.h>
 
-//TODO
-// Figure out some common shader variable names
-// Use them to generalize working with shaders
-// 1. Set shader uniforms not by name, but by predefined methods
+//TODO Figure out the structure of the refactored engine model
+// 1. What is a material? What constitutes the material?
+// 2. What is a hierarchy of materials? Is there an inherent hierarchy?
+
+
 namespace Uroboros {
     class ShaderProgram {
     public:
@@ -33,9 +34,9 @@ namespace Uroboros {
     private:
         uint32_t id;
         static constexpr uint16_t infoLogSize = 512;
-        static const std::string diffuseSamplerName;
-        static const std::string specularSamplerName;
-        static const std::string normalSamplerName;
+        inline static const std::string cDiffuseSamplerName = "material.diffuse_map";
+        inline static const std::string cSpecularSamplerName = "material.specular_map";
+        inline static const std::string cNormalSamlerName = "material.normal_map";
 
     private:
         void createShaderProgram(uint32_t vertexShaderId, uint32_t fragmentShaderId);
